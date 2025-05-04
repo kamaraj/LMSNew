@@ -1,0 +1,60 @@
+-- MySQL dump 10.13  Distrib 8.0.41, for Win64 (x86_64)
+--
+-- Host: localhost    Database: test
+-- ------------------------------------------------------
+-- Server version	8.0.41
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `lms_quizresult`
+--
+
+DROP TABLE IF EXISTS `lms_quizresult`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `lms_quizresult` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `score` int NOT NULL,
+  `taken_at` datetime(6) NOT NULL,
+  `quiz_id` bigint DEFAULT NULL,
+  `cluster` varchar(100) DEFAULT NULL,
+  `percentage` decimal(5,2) DEFAULT NULL,
+  `total_questions` int DEFAULT NULL,
+  `user_id` bigint DEFAULT NULL,
+  `set_id` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_quiz_id` (`quiz_id`),
+  CONSTRAINT `fk_quiz_id` FOREIGN KEY (`quiz_id`) REFERENCES `lms_quiz` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `lms_quizresult`
+--
+
+LOCK TABLES `lms_quizresult` WRITE;
+/*!40000 ALTER TABLE `lms_quizresult` DISABLE KEYS */;
+INSERT INTO `lms_quizresult` VALUES (1,4,'2025-04-21 06:03:36.833368',1,'Language',20.00,20,1,'BM101'),(2,2,'2025-04-21 06:04:07.709735',1,'Language',10.00,20,1,'BM101'),(3,17,'2025-04-21 06:07:14.463760',1,'Language',85.00,20,1,'BM101'),(4,3,'2025-04-21 06:39:44.431217',1,'Language',15.00,20,1,'BM101'),(5,0,'2025-04-21 07:04:13.417012',4,'Generic',0.00,20,1,'PB100'),(6,6,'2025-04-21 07:05:35.780043',1,'Language',30.00,20,1,'BM101'),(7,8,'2025-04-21 07:39:11.140557',1,'Language',40.00,20,1,'BM101'),(8,4,'2025-04-22 16:50:23.791271',4,'Generic',20.00,20,1,'PB100'),(9,18,'2025-04-23 09:29:52.096375',1,'Language',90.00,20,1,'BM101'),(10,5,'2025-04-23 09:31:10.221167',4,'Generic',25.00,20,1,'PB100'),(11,9,'2025-04-23 10:40:40.227779',1,'Language',45.00,20,1,'BM101'),(12,4,'2025-04-23 10:42:15.632351',4,'Generic',20.00,20,1,'PB100'),(13,4,'2025-04-23 15:11:45.857955',1,'Language',20.00,20,1,'BM101'),(14,5,'2025-04-23 15:13:21.798812',1,'Language',25.00,20,1,'BM101'),(15,11,'2025-04-24 06:19:48.535706',5,'Language',55.00,20,2,'BM101'),(16,5,'2025-04-24 06:20:25.112260',5,'Language',25.00,20,2,'BM101'),(17,4,'2025-04-24 06:29:07.899430',6,'Generic',20.00,20,2,'PB100'),(18,4,'2025-04-24 09:06:36.886900',6,'Generic',20.00,20,1,'PB100'),(19,7,'2025-04-24 09:07:10.346011',6,'Generic',35.00,20,1,'PB100'),(20,5,'2025-04-26 13:01:27.988059',5,'Language',25.00,20,1,'BM101'),(21,8,'2025-04-29 03:53:30.893649',5,'Language',40.00,20,1,'BM101'),(22,6,'2025-04-29 05:00:30.680309',5,'Language',30.00,20,2,'BM101'),(23,19,'2025-04-29 05:14:39.985232',5,'Language',95.00,20,2,'BM101'),(24,5,'2025-04-29 05:23:39.384434',5,'Language',25.00,20,2,'BM101');
+/*!40000 ALTER TABLE `lms_quizresult` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2025-04-30 13:57:25

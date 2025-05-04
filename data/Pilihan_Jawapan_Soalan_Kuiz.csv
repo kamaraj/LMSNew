@@ -1,0 +1,81 @@
+id,question_id,choice_text
+1,1,A) Kajian tentang sains
+2,1,B) Kajian tentang budaya dan seni bahasa
+3,1,C) Kajian tentang ekonomi
+4,1,D) Kajian tentang sejarah
+5,2,A) Membantu pelajar memahami tatabahasa
+6,2,B) Meningkatkan kemahiran komunikasi dan kreativiti
+7,2,C) Menjadikan pelajar lebih mahir dalam matematik
+8,2,D) Mengajar konsep fizik
+9,3,A) Kesusasteraan Inggeris
+10,3,B) Kesusasteraan Melayu Klasik dan Moden
+11,3,C) Kesusasteraan Cina
+12,3,D) Kesusasteraan Jepun
+13,4,A) Hikayat Hang Tuah
+14,4,B) Harry Potter
+15,4,C) Lord of the Rings
+16,4,D) Game of Thrones
+17,5,A) Ia mengajar pelajar tentang kisah hantu
+18,5,B) Ia membantu membentuk sahsiah dan moral yang baik
+19,5,C) Ia membantu pelajar menjadi kaya
+20,5,D) Ia hanya sekadar hiburan
+21,6,"A) Watak, tema, dan plot"
+22,6,B) Matematik dan Fizik
+23,6,C) Warna dan bentuk
+24,6,D) Jenis-jenis tumbuhan
+25,7,A) Sebagai alat komunikasi dan hiburan
+26,7,B) Untuk mengajar sains
+27,7,C) Untuk menyelesaikan masalah matematik
+28,7,D) Untuk meramal masa depan
+29,8,A) Soneta
+30,8,B) Syair dan Gurindam
+31,8,C) Haiku
+32,8,D) Limerick
+33,9,A) Dengan memperkenalkan kosa kata baru
+34,9,B) Dengan menghafal nombor
+35,9,C) Dengan menulis rumusan sejarah
+36,9,D) Dengan membaca jurnal sains
+37,10,A) A. Samad Said
+38,10,B) J.K. Rowling
+39,10,C) Stephen King
+40,10,D) George Orwell
+41,11,A) Novel moden
+42,11,"B) Hikayat, pantun, dan legenda"
+43,11,C) Drama Broadway
+44,11,D) Cerpen sains fiksyen
+45,12,A) Perbandingan secara langsung tanpa kata seperti 'seperti' atau 'bagai'
+46,12,B) Pengulangan kata dalam ayat
+47,12,C) Penggunaan bahasa kasar
+48,12,D) Kiasan yang tidak bermakna
+49,13,A) Ia menyampaikan nilai moral dan budaya
+50,13,B) Ia hanya untuk hiburan semata-mata
+51,13,C) Ia mengandungi fakta sejarah tepat
+52,13,D) Ia tidak memberi kesan kepada pembelajaran
+53,14,A) Dengan menganalisis tema dan watak
+54,14,B) Dengan menghafal perkataan sahaja
+55,14,C) Dengan membaca tanpa memahami
+56,14,D) Dengan mengabaikan aspek seni bahasa
+57,15,A) Memberikan pelajar pengalaman membaca secara mendalam
+58,15,B) Menggantikan buku teks
+59,15,C) Mengajar pelajar cara menulis puisi
+60,15,D) Menghafal fakta sejarah
+61,16,A) A. Samad Said
+62,16,B) Usman Awang
+63,16,C) Shahnon Ahmad
+64,16,D) J.M. Coetzee
+65,17,A) Melalui perbincangan dan lakonan
+66,17,B) Dengan membaca sahaja tanpa perbincangan
+67,17,C) Dengan menghafal setiap ayat dalam novel
+68,17,D) Dengan menonton filem tanpa analisis
+69,18,A) Ia diwarisi secara turun-temurun dan lebih bersifat interaktif
+70,18,B) Ia lebih moden dan menggunakan teknologi tinggi
+71,18,C) Ia tidak boleh diubah suai oleh generasi baharu
+72,18,D) Ia lebih pendek daripada sastera bertulis
+73,19,A) Dengan menghidupkan peristiwa sejarah melalui naratif
+74,19,B) Dengan menggantikan buku teks sejarah
+75,19,C) Dengan menulis cerita fiksyen sendiri
+76,19,D) Dengan membaca novel moden sahaja
+77,20,"A) Meningkatkan daya imaginasi, empati, dan pemahaman bahasa"
+78,20,B) Memudahkan pelajar menjadi saintis
+79,20,C) Mengelakkan pelajar daripada membaca buku lain
+80,20,D) Menjadikan pelajar lebih mahir dalam matematik

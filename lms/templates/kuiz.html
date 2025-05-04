@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <title>Soalan Kuiz</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f2f7fb;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 900px;
+      margin: 50px auto;
+      padding: 30px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #007bff;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .quiz-title {
+      text-align: center;
+      font-weight: bold;
+      color: #007bff;
+      margin-bottom: 30px;
+    }
+    .question {
+      margin-bottom: 30px;
+    }
+    .question h4 {
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .options label {
+      display: block;
+      padding: 10px 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .options input[type="radio"] {
+      margin-right: 10px;
+    }
+    .options label:hover {
+      background: #e6f0ff;
+      transform: scale(1.02);
+    }
+    .submit-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(to right, #007bff, #0056b3);
+      border: none;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      transition: background 0.3s ease, transform 0.2s;
+    }
+    .submit-btn:hover {
+      background: #004b9a;
+      transform: translateY(-2px);
+    }
+    .back-link {
+      display: inline-block;
+      margin-top: 20px;
+      text-decoration: none;
+      color: #007bff;
+      font-weight: 500;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+      color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2><i class="fas fa-question-circle"></i> Soalan Kuiz</h2>
+  <p class="quiz-title">
+    {% if subject_code == 'BM101' %}
+      Ujian 1: Kesusasteraan Bahasa Melayu
+    {% elif subject_code == 'PB100' %}
+      Ujian 2: Pentaksiran Berterusan
+    {% else %}
+      Kuiz
+    {% endif %}
+  </p>
+  <form method="POST">
+    {% csrf_token %}
+    {% for soalan in soalan_list %}
+      <div class="question">
+        <h4>{{ forloop.counter }}. {{ soalan.question_text }}</h4>
+        <div class="options">
+          <label><input type="radio" name="{{ soalan.question_id }}" value="A" required> {{ soalan.choice_a }}</label>
+          <label><input type="radio" name="{{ soalan.question_id }}" value="B"> {{ soalan.choice_b }}</label>
+          <label><input type="radio" name="{{ soalan.question_id }}" value="C"> {{ soalan.choice_c }}</label>
+          <label><input type="radio" name="{{ soalan.question_id }}" value="D"> {{ soalan.choice_d }}</label>
+        </div>
+      </div>
+    {% endfor %}
+    <button type="submit" class="submit-btn">Hantar Jawapan</button>
+  </form>
+  <a href="{% url 'user_dashboard' %}" class="back-link">← Kembali ke Dashboard</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,386 @@
+{% load static %} 
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard Pengguna</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: #eaf1fa;
+      overflow: hidden;
+    }
+    .container {
+      display: flex;
+      height: 100vh;
+    }
+    .sidebar {
+      width: 260px;
+      background-color: #004080;
+      color: white;
+      padding: 20px 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: fixed;
+      height: 100vh;
+    }
+    .sidebar h2 {
+      font-size: 18px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      padding: 10px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+    }
+    .sidebar a:hover,
+    .sidebar a.active {
+      background-color: #007bff;
+    }
+    .content {
+      margin-left: 260px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    .header {
+      background-color: #007bff;
+      color: white;
+      padding: 15px 25px;
+      font-weight: bold;
+      font-size: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cards {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 20px;
+      gap: 20px;
+      justify-content: space-between;
+      height: 45%;
+    }
+    .card {
+      flex: 1 1 calc(20% - 10px);
+      min-width: 200px;
+      background-color: white;
+      border-radius: 12px;
+      padding: 0;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      text-align: center;
+      border: 2px solid #007bff33;
+      font-size: 16px;
+      overflow: hidden;
+    }
+    .card-header {
+      background-color: #007bff;
+      color: white;
+      padding: 10px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    .card-body {
+      padding: 20px;
+    }
+    .progress-bar {
+      background: #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      height: 20px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: #007bff;
+      color: white;
+      line-height: 20px;
+    }
+    .calendar-ramalan {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 20px 20px;
+      flex: 1;
+      align-items: stretch;
+      gap: 20px;
+    }
+    .calendar-box, .ramalan-box {
+      background-color: white;
+      border-radius: 12px;
+      flex: 0 0 48%;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      border: 2px solid #007bff33;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .calendar-box iframe {
+      width: 100%;
+      height: 340px;
+      border: none;
+      background-color: transparent;
+      filter: hue-rotate(20deg) brightness(1.05);
+      border-radius: 0 0 8px 8px;
+    }
+    .calendar-box h3, .ramalan-box h3 {
+      margin: 0;
+      padding: 10px;
+      background: #007bff;
+      color: white;
+      font-size: 16px;
+      border-radius: 12px 12px 0 0;
+    }
+    .ramalan-box p {
+      padding: 20px;
+      font-size: 16px;
+    }
+    .chatbot {
+      position: fixed;
+      bottom: 80px;
+      right: 30px;
+      width: 80px;
+      height: 80px;
+      cursor: pointer;
+      animation: float 3s ease-in-out infinite;
+      z-index: 999;
+    }
+    .chatbot {
+      width: 100px;   /* Kawal saiz icon */
+      height: 100px;  /* Maintain ratio */
+    }
+
+    .chatbot img {
+    width: 100%;  /* Maintain ikut parent */
+}
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+      100% { transform: translateY(0); }
+    }
+    .chatbot-popup {
+      display: none;
+      position: fixed;
+      bottom: 170px;
+      right: 30px;
+      width: 320px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      z-index: 1000;
+      overflow: hidden;
+      flex-direction: column;
+    }
+    .chatbot-header {
+      background-color: #007bff;
+      color: white;
+      padding: 12px;
+      font-size: 16px;
+    }
+    .chatbot-body {
+      padding: 10px;
+      height: 200px;
+      overflow-y: auto;
+      font-size: 14px;
+    }
+    .chatbot-input {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #eee;
+    }
+    .chatbot-input input {
+      flex: 1;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .chatbot-input button {
+      margin-left: 6px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 260px;
+      width: calc(100% - 260px);
+      background-color: #222;
+      color: white;
+      padding: 10px;
+      text-align: center;
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .footer span {
+      display: inline-block;
+      animation: slide 25s linear infinite;
+    }
+    @keyframes slide {
+      0% { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="sidebar">
+    <div>
+      <h2><i class="fas fa-bars"></i> MENU</h2>
+      <a href="#"><i class="fas fa-home"></i> Home</a>
+      <a href="#"><i class="fas fa-info-circle"></i> Tentang ELITE</a>
+      <a href="#"><i class="fas fa-book"></i> Kurikulum</a>
+      <a href="#"><i class="fas fa-clipboard-check"></i> Penilaian</a>
+      <a href="#"><i class="fas fa-cogs"></i> Sijil</a>
+    </div>
+    <div style="margin-bottom: 40px;">
+      <a href="/" style="background:#ff4444; color:white;"><i class="fas fa-sign-out-alt"></i> Log Keluar</a>
+    </div>
+  </div>
+  <div class="content">
+    <div class="header">
+      📊 Dashboard Pengguna | Selamat datang.
+      <span>👤 {{ request.user.username }}</span>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-header">Prestasi 3 Tahun</div>
+        <div class="card-body">
+          <p>Progress pengguna:</p>
+          <div class="progress-bar">
+        <div class="progress-bar-fill" style="width: 0%;" data-progress="{{ user_progress|default:'0' }}">{{ user_progress|default:'0' }}%</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">Soalan Ujian</div>
+        <div class="card-body">
+          <form method="get" action="{% url 'kuiz' %}">
+            <label for="set">Pilih Ujian:</label>
+            <select name="set" id="set">
+              <option value="BM101">Ujian 1: BM101</option>
+              <option value="PB100">Ujian 2: PB100</option>
+            </select>
+            <br><br>
+            <button type="submit">Jawab Kuiz</button>
+          </form>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">Keputusan Ujian</div>
+        <div class="card-body">
+            <p><strong>BM101:</strong> {{ bm101_result.score|default:0 }} / {{ bm101_result.total_questions|default:0 }} ({{ bm101_result.percentage|default:0 }}%)</p>
+            <p><strong>PB100:</strong> {{ pb100_result.score|default:0 }} / {{ pb100_result.total_questions|default:0 }} ({{ pb100_result.percentage|default:0 }}%)</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">Nota & PDF</div>
+        <div class="card-body">
+          <a href="{% static 'nota/bm101_bahasa.pdf' %}" download>📥 Muat Turun BM101</a><br>
+          <a href="{% static 'nota/pb100_pb.pdf' %}" download>📥 Muat Turun PB100</a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">Modul Video</div>
+        <div class="card-body">
+          <a href="{% static 'video/modul_bm101.mp4' %}" target="_blank">🎬 Tonton Video BM101</a><br>
+          <a href="{% static 'video/modul_pb100.mp4' %}" target="_blank">🎬 Tonton Video PB100</a>
+        </div>
+      </div>
+    </div>
+    <div class="calendar-ramalan">
+      <div class="calendar-box">
+        <h3><i class="fas fa-calendar-alt"></i> Kalendar</h3>
+        <iframe src="https://calendar.google.com/calendar/embed?src=malaysia__ms%40holiday.calendar.google.com&ctz=Asia%2FKuala_Lumpur"></iframe>
+      </div>
+      <div class="ramalan-box">
+  <h3><i class="fas fa-brain"></i> Ramalan Prestasi</h3>
+  <p>
+    📈 Prediction Marks: {{ prediction_marks }}% <br>
+    🏆  Prediction Status: {{ prediction_status }}
+  </p>
+</div>
+
+    </div>
+    <div class="chatbot" onclick="toggleChatbot()">
+      <img src="{% static 'image/chatbot.jpg' %}" alt="Chatbot">
+    </div>
+    <div class="chatbot-popup" id="chatbot">
+      <div class="chatbot-header">Elite Bot</div>
+      <div class="chatbot-body" id="chat-content">
+        <p>Hai! Ada yang saya boleh bantu?</p>
+      </div>
+      <div class="chatbot-input">
+        <input type="text" id="chat-input" placeholder="Tanya saya sesuatu...">
+        <button onclick="sendMessage()">Hantar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer">
+  <span>© 2025 Hakcipta terpelihara|  ELITE -by Noor Azlida Ali (Kohort2@ACE.India) | Versi Beta</span>
+</div>
+<!-- ... (semua kod HTML anda di atas kekal sama) ... -->
+
+<script>
+  
+  function toggleChatbot() {
+    var bot = document.getElementById("chatbot");
+    bot.style.display = bot.style.display === "none" || bot.style.display === "" ? "block" : "none";
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById("chat-input");
+    const content = document.getElementById("chat-content");
+    const userText = input.value.trim();
+
+    if (userText === "") return;
+
+    const userMsg = document.createElement("p");
+    userMsg.textContent = "Anda: " + userText;
+    content.appendChild(userMsg);
+    input.value = "";
+
+    try {
+      const response = await fetch("/api/chatbot/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userText })
+      });
+
+      const data = await response.json();
+
+      const botReply = document.createElement("p");
+      botReply.textContent = "Bot: " + data.response;
+      content.appendChild(botReply);
+      speakText(data.response);  // ✅ Panggil suara bot
+      content.scrollTop = content.scrollHeight;
+
+    } catch (error) {
+      console.error("API Error:", error);
+    }
+  }
+  document.addEventListener("DOMContentLoaded", () => {
+  const progressBar = document.querySelector(".progress-bar-fill");
+  const progressValue = progressBar.getAttribute("data-progress");
+  progressBar.style.width = progressValue + "%";
+});
+</script>
+</body>
+</html>

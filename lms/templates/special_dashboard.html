@@ -1,0 +1,159 @@
+28/4 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Staff Performance Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .header-title { display: flex; justify-content: space-between; align-items: center; margin: 20px; }
+        .header-title h1 { font-size: 36px; color: green; }
+        .header-title h2 { font-size: 28px; color: orange; }
+        .kpi-container { display: flex; justify-content: space-around; flex-wrap: wrap; margin: 20px 0; }
+        .kpi-card { width: 200px; padding: 15px; margin: 10px; border-radius: 10px; color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.2); text-align: center; }
+        .kpi-total_courses { background-color: #6C63FF; }
+        .kpi-generic { background-color: #FF6F61; }
+        .kpi-language { background-color: #FFB74D; }
+        .kpi-innovation { background-color: #E57373; }
+        .kpi-ict { background-color: #4DB6AC; }
+        .kpi-stem { background-color: #9575CD; }
+        .kpi-title { font-size: 18px; }
+        .kpi-value { font-size: 32px; font-weight: bold; }
+    </style>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+</head>
+<body>
+<div class="header-title">
+    <h1>Staff Performance <span style="color:orange;">Dashboard</span></h1>
+    <h2>Yearly <span style="color:green;">Report</span></h2>
+</div>
+<!-- KPI Cards -->
+<div class="kpi-container">
+    <div class="kpi-card kpi-total_courses"><div class="kpi-title">Total Courses</div><div class="kpi-value">{{ kpi_data.total_courses }}</div></div>
+    <div class="kpi-card kpi-generic"><div class="kpi-title">Generic</div><div class="kpi-value">{{ kpi_data.total_generic }}</div></div>
+    <div class="kpi-card kpi-language"><div class="kpi-title">Language</div><div class="kpi-value">{{ kpi_data.total_language }}</div></div>
+    <div class="kpi-card kpi-innovation"><div class="kpi-title">Innovation</div><div class="kpi-value">{{ kpi_data.total_innovation }}</div></div>
+    <div class="kpi-card kpi-ict"><div class="kpi-title">ICT</div><div class="kpi-value">{{ kpi_data.total_ict }}</div></div>
+    <div class="kpi-card kpi-stem"><div class="kpi-title">STEM</div><div class="kpi-value">{{ kpi_data.total_stem }}</div></div>
+</div>
+<!-- Bar Chart -->
+<h2 style="text-align:center;">Staff Performance by Department</h2>
+<div id="deptPerformanceChart" style="width:90%;height:400px;margin:auto;"></div>
+<script>
+    var deptPerformance = JSON.parse('{{ dept_performance|safe|escapejs }}');
+    Plotly.newPlot('deptPerformanceChart', [{
+        x: deptPerformance.map(item => item.department),
+        y: deptPerformance.map(item => item.total_courses),
+        type: 'bar',
+        marker: { color: '#FF6F61' }
+    }], { title: 'Total Courses by Department' });
+</script>
+<!-- Clustered Column + Line Chart -->
+<h2 style="text-align:center;">Total Cluster Course</h2>
+<div id="clusterCourseChart" style="width:90%;height:400px;margin:auto;"></div>
+<script>
+    var clusterCourse = JSON.parse('{{ cluster_course|safe|escapejs }}');
+    Plotly.newPlot('clusterCourseChart', [
+        { x: clusterCourse.map(item => item.department), y: clusterCourse.map(item => item.generic), name: 'Generic', type: 'bar' },
+        { x: clusterCourse.map(item => item.department), y: clusterCourse.map(item => item.ict), name: 'ICT', type: 'bar' },
+        { x: clusterCourse.map(item => item.department), y: clusterCourse.map(item => item.language), name: 'Language', type: 'bar' },
+        { x: clusterCourse.map(item => item.department), y: clusterCourse.map(item => item.innovation), name: 'Innovation', type: 'bar' },
+        { x: clusterCourse.map(item => item.department), y: clusterCourse.map(item => item.stem), name: 'STEM', type: 'line' }
+    ], { barmode: 'group', title: 'Total Cluster Course by Department' });
+</script>
+<!-- Pie Chart -->
+<h2 style="text-align:center;">Total Courses Distribution by Department</h2>
+<div id="departmentPieChart" style="width:50%;height:400px;margin:auto;"></div>
+<script>
+    var pieDept = JSON.parse('{{ pie_department|safe|escapejs }}');
+    Plotly.newPlot('departmentPieChart', [{
+        labels: pieDept.map(item => item.department),
+        values: pieDept.map(item => item.total_courses),
+        type: 'pie',
+        marker: { colors: ['#6C63FF', '#FF6F61', '#FFB74D', '#E57373', '#4DB6AC', '#9575CD'] }
+    }], { title: 'Total Courses by Department' });
+</script>
+<!-- Table + Slicer -->
+<h2 style="text-align:center;">Staff Performance Table</h2>
+<div style="width:90%;margin:auto; margin-bottom:20px;">
+    <label for="departmentFilter">Department:</label>
+    <select id="departmentFilter"><option value="">All</option></select>
+    <label for="positionFilter">Position:</label>
+    <select id="positionFilter"><option value="">All</option></select>
+    <label for="performanceFilter">Accumulative Performance:</label>
+    <select id="performanceFilter"><option value="">All</option></select>
+    <label for="marksFilter">Accumulative Marks:</label>
+    <select id="marksFilter">
+        <option value="">All</option>
+        <option value=">80">Above 80</option>
+        <option value="50-80">50 - 80</option>
+        <option value="<50">Below 50</option>
+    </select>
+</div>
+<div style="width:90%;margin:auto;">
+    <table id="staffTable" class="display">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Department</th>
+                <th>Total Courses</th>
+                <th>Accumulative Marks</th>
+                <th>Accumulative Performance</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<script>
+var staffData = JSON.parse('{{ staff_list|safe|escapejs }}');
+$(document).ready(function() {
+    var table = $('#staffTable').DataTable({
+        data: staffData,
+        columns: [
+            { data: 'name' },
+            { data: 'position' },
+            { data: 'department' },
+            { data: 'total_courses' },
+            { data: 'accumulative_marks' },
+            { data: 'accumulative_performance' }
+        ]
+    });
+    // Populate Department
+    var departments = [...new Set(staffData.map(item => item.department))];
+    departments.forEach(dept => $('#departmentFilter').append('<option value="'+dept+'">'+dept+'</option>'));
+    // Populate Position
+    var positions = [...new Set(staffData.map(item => item.position))];
+    positions.forEach(pos => $('#positionFilter').append('<option value="'+pos+'">'+pos+'</option>'));
+    // Populate Performance
+    var performances = [...new Set(staffData.map(item => item.accumulative_performance))];
+    performances.forEach(perf => $('#performanceFilter').append('<option value="'+perf+'">'+perf+'</option>'));
+    // Filter Logic
+    $('#departmentFilter, #positionFilter, #performanceFilter, #marksFilter').on('change', function() {
+        table.rows().every(function() {
+            var data = this.data();
+            var show = true;
+            var deptVal = $('#departmentFilter').val();
+            var posVal = $('#positionFilter').val();
+            var perfVal = $('#performanceFilter').val();
+            var marksVal = $('#marksFilter').val();
+            if (deptVal && data.department !== deptVal) { show = false; }
+            if (posVal && data.position !== posVal) { show = false; }
+            if (perfVal && data.accumulative_performance !== perfVal) { show = false; }
+            if (marksVal) {
+                var marks = parseFloat(data.accumulative_marks);
+                if (marksVal == ">80" && !(marks > 80)) { show = false; }
+                else if (marksVal == "50-80" && !(marks >= 50 && marks <= 80)) { show = false; }
+                else if (marksVal == "<50" && !(marks < 50)) { show = false; }
+            }
+            if (show) { $(this.node()).show(); }
+            else { $(this.node()).hide(); }
+        });
+    });
+});
+</script>
+</body>
+</html>

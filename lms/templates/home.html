@@ -1,0 +1,269 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <title>Selamat Datang ke ELITE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      width: 100%;
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden; /* Buang scroll tepi */
+    }
+    body {
+      background: url("{% static 'image/login.jpg' %}") no-repeat center center fixed;
+      background-size: cover;
+    }
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.7);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    header {
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(90deg, #ff416c, #ff8a00, #00c9ff);
+      flex-wrap: wrap;
+      width: 100%; /* Fit to page */
+    }
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .logo-container img {
+      height: 70px;
+      background: #fff;
+      padding: 6px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    .dashboard-btn {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+}
+    .dashboard-btn:hover {
+     background-color: #218838;
+      transform: scale(1.05);
+}
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-shrink: 1;
+      flex-wrap: wrap;
+    }
+    .header-text {
+      color: white;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .dashboard-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    white-space: nowrap;
+    text-decoration: none; /* buang underline */
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+  .dashboard-btn:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+}
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      max-width: 100%;
+    }
+    .hero h1 {
+      font-size: 42px;
+      margin-bottom: 15px;
+      color: white;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
+      animation: fadeInUp 1s ease-in-out;
+    }
+    .hero span {
+      color: #00ff88;
+    }
+    .hero p {
+      font-size: 16px;
+      color: white;
+      max-width: 850px;
+      margin: 0 auto 10px;
+      line-height: 1.6;
+      animation: fadeInUp 1.5s ease-in-out;
+    }
+    #typewriter {
+      font-size: 18px;
+      color: #ffd700;
+      font-weight: bold;
+      margin-top: 15px;
+      animation: fadeInUp 2s ease-in-out;
+    }
+    .login-box {
+      background: white;
+      border-radius: 14px;
+      padding: 30px;
+      width: 100%;
+      max-width: 400px;
+      margin-top: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      animation: fadeInUp 2s ease-in-out;
+    }
+    .login-box h3 {
+      margin-bottom: 20px;
+      font-weight: 700;
+      font-size: 20px;
+      color: #333;
+    }
+    .login-box input[type="text"],
+    .login-box input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .login-box label {
+      font-size: 14px;
+    }
+    .login-box .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .login-box button {
+      width: 100%;
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .login-box button:hover {
+      background: #0056b3;
+    }
+    .login-box .bottom-text {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+    footer {
+      background: rgba(255, 255, 255, 0.95);
+      border-top: 5px solid yellow;
+      padding: 8px 0;
+      text-align: center;
+    }
+    .marquee-text {
+      color: #000;
+      font-size: 14px;
+      animation: marquee 60s linear infinite;
+      white-space: nowrap;
+    }
+    @keyframes marquee {
+      from { transform: translateX(100%); }
+      to { transform: translateX(-100%); }
+    }
+    @keyframes fadeInUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 32px; }
+      .hero p { font-size: 14px; }
+      .login-box { margin: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <header>
+      <div class="logo-container">
+        <img src="{% static 'image/kpm.jpg' %}" alt="Logo KPM">
+        <img src="{% static 'image/ipgkrm.jpg' %}" alt="Logo IPGKRM">
+        <img src="{% static 'image/plag.jpg' %}" alt="Logo PLAG">
+      </div>
+      <div class="header-right">
+        <div class="header-text">Institut Pendidikan Guru Kampus Raja Melewar</div>
+        <a href="/dashboard/special-access/" class="dashboard-btn">
+          📊 Dashboard Visualisasi Data
+        </a>                             
+      </div>
+    </header>
+  
+    <div class="main-content">
+      <div class="hero">
+        <h1>Selamat Datang ke <span>ELiTE</span></h1>
+        <p>
+          Laman ini dibangunkan oleh Pusat Latihan Akademia Guru sebagai rujukan setempat program dan aktiviti
+          Pembangunan Profesionalisme Berterusan (PPB) di bawah kelolaan Institut Pendidikan Guru Kampus Raja Melewar.
+        </p>
+        <div id="typewriter"></div>
+      </div>
+      <div class="login-box">
+        <h3>Log Masuk ke Dashboard</h3>
+        <form method="POST" action="{% url 'login' %}">
+          {% csrf_token %}
+          <label>User ID</label>
+          <input type="text" name="username" placeholder="Masukkan ID Pengguna" required>
+          <label>Password</label>
+          <input type="password" name="password" placeholder="Masukkan Kata Laluan" required>
+          <div class="actions">
+            <label><input type="checkbox"> Remember me</label>
+            <a href="{% url 'password_reset' %}">Forgot password?</a>
+          </div>
+          <button type="submit">Login</button>
+          <div class="bottom-text">
+            Belum ada akaun? <a href="{% url 'register' %}">Daftar di sini</a>
+          </div>
+        </form>
+      </div>
+    </div>
+    <footer>
+      <p class="marquee-text">© 2025 Hakcipta Terpelihara | ELITE by Noor Azlida Ali (Kohort2@ACE.India)</p>
+    </footer>
+  </div>
+  <script>
+    const text = "Transformasi Latihan, Kuasa Digitalisasi.";
+    let j = 0;
+    function typeWriter() {
+      if (j < text.length) {
+        document.getElementById("typewriter").innerHTML += text.charAt(j);
+        j++;
+        setTimeout(typeWriter, 70);
+      }
+    }
+    typeWriter();
+  </script>
+</body>
+</html>
