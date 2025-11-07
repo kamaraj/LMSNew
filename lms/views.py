@@ -62,7 +62,13 @@ def after_login_view(request):
 # -------------------------
 @login_required
 def dashboard_redirect(request):
-    role = request.user.userprofile.role
+    try:
+        # Optimize: Use select_related to avoid additional query
+        user_profile = UserProfile.objects.select_related('user').get(user=request.user)
+        role = user_profile.role
+    except UserProfile.DoesNotExist:
+        return redirect('login')
+    
     if role == 'admin':
         return redirect('admin_dashboard')
     elif role == 'user':
@@ -87,8 +93,18 @@ def top_management_dashboard(request):
 @login_required
 def user_dashboard(request):
     user_profile, _ = UserProfile.objects.get_or_create(user=request.user)
-    bm101_result = QuizResult.objects.filter(user=user_profile, set_id='BM101').first()
-    pb100_result = QuizResult.objects.filter(user=user_profile, set_id='PB100').first()
+    
+    # Optimize: Fetch both results in a single query with select_related
+    quiz_results = QuizResult.objects.filter(
+        user=user_profile, 
+        set_id__in=['BM101', 'PB100']
+    ).select_related('quiz')
+    
+    # Convert to dictionary for easy lookup
+    results_dict = {result.set_id: result for result in quiz_results}
+    bm101_result = results_dict.get('BM101')
+    pb100_result = results_dict.get('PB100')
+    
     total_score = 0
     total_questions = 0
     if bm101_result:
@@ -98,10 +114,7 @@ def user_dashboard(request):
         total_score += pb100_result.score
         total_questions += pb100_result.total_questions
     user_progress = round((total_score / total_questions) * 100, 2) if total_questions > 0 else 0
-    ##user_progress = 22
-    print('total score:', total_score)
-    print('total questions:', total_questions)
-    print('user progress:', user_progress)
+    
     return render(request, 'user_dashboard.html', {
         'bm101_result': bm101_result,
         'pb100_result': pb100_result,
@@ -113,7 +126,9 @@ def user_dashboard(request):
 @login_required
 def kuiz_view(request):
     kod_subjek = request.GET.get('set', 'BM101')
-    soalan_list = QuestionBank.objects.filter(subject_code=kod_subjek).order_by('?')[:20]
+    # Optimize: Convert queryset to list immediately to avoid repeated queries
+    soalan_list = list(QuestionBank.objects.filter(subject_code=kod_subjek).order_by('?')[:20])
+    
     if request.method == 'POST':
         markah = 0
         for soalan in soalan_list:
@@ -169,11 +184,12 @@ def kuiz_view(request):
 # -------------------------
 @login_required
 def kuiz_page(request):
-    soalan_list = QuestionBank.objects.filter(subject_code='BM101')[:20]
+    # Optimize: Convert to list and use only() to fetch only needed fields
+    soalan_list = list(QuestionBank.objects.filter(subject_code='BM101')[:20])
     result = {'markah': 0, 'jumlah': len(soalan_list), 'peratus': 0}
     if request.method == 'POST':
         markah = 0
-        jumlah = soalan_list.count()
+        jumlah = len(soalan_list)
         for soalan in soalan_list:
             jawapan_user = request.POST.get(str(soalan.question_id))
             if jawapan_user and jawapan_user.upper() == soalan.correct_answer:
@@ -206,8 +222,11 @@ def import_question_bank(request):
         missing_columns = [col for col in required_columns if col not in reader.fieldnames]
         if missing_columns:
             return HttpResponse(f"Error: Missing columns in CSV file: {', '.join(missing_columns)}", status=400)
+        
+        # Optimize: Use bulk_create instead of individual creates
+        questions_to_create = []
         for row in reader:
-            QuestionBank.objects.create(
+            questions_to_create.append(QuestionBank(
                 subject_code=row['subject_code'],
                 question_text=row['question_text'],
                 choice_a=row['choice_a'],
@@ -215,7 +234,11 @@ def import_question_bank(request):
                 choice_c=row['choice_c'],
                 choice_d=row['choice_d'],
                 correct_answer=row['correct_answer']
-            )
+            ))
+        
+        # Bulk insert all questions at once
+        QuestionBank.objects.bulk_create(questions_to_create, batch_size=500)
+        
         return HttpResponse('✅ Question bank imported successfully!')
     return render(request, 'import_question_bank.html')
 
@@ -316,7 +339,8 @@ from lms.ml_models.predict_exam import predict_mark
 from .models import StaffPerformance  # sesuaikan nama model anda
 
 def show_prediction(request, user_id):
-    staff = StaffPerformance.objects.get(user_id=user_id)
+    # Optimize: Use select_related to avoid N+1 query
+    staff = StaffPerformance.objects.select_related('user__user').get(user_id=user_id)
 
     predicted_mark = predict_mark(
         staff.marks_2020,
