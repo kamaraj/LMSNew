@@ -63,10 +63,9 @@ def after_login_view(request):
 # -------------------------
 @login_required
 def dashboard_redirect(request):
+    # Access userprofile directly - Django caches this via OneToOneField
     try:
-        # Get user profile - no need for select_related since we already have the user
-        user_profile = UserProfile.objects.get(user=request.user)
-        role = user_profile.role
+        role = request.user.userprofile.role
     except UserProfile.DoesNotExist:
         return redirect('login')
     
@@ -124,22 +123,28 @@ def user_dashboard(request):
 
 # 📖 Paparan Kuiz
 # -------------------------
+def _get_random_questions(subject_code, limit=20):
+    """
+    Efficiently get random questions for a given subject.
+    Uses ID sampling instead of order_by('?') for better performance.
+    """
+    all_questions = QuestionBank.objects.filter(subject_code=subject_code)
+    total_count = all_questions.count()
+    
+    if total_count <= limit:
+        return list(all_questions)
+    else:
+        # Get random sample of IDs and fetch those questions
+        all_ids = list(all_questions.values_list('question_id', flat=True))
+        random_ids = random.sample(all_ids, min(limit, len(all_ids)))
+        return list(QuestionBank.objects.filter(question_id__in=random_ids))
+
 @login_required
 def kuiz_view(request):
     kod_subjek = request.GET.get('set', 'BM101')
     
-    # Optimize: Use efficient random selection instead of order_by('?')
-    # First get the count and then sample random IDs
-    all_questions = QuestionBank.objects.filter(subject_code=kod_subjek)
-    total_count = all_questions.count()
-    
-    if total_count <= 20:
-        soalan_list = list(all_questions)
-    else:
-        # Get random sample of IDs and fetch those questions
-        all_ids = list(all_questions.values_list('question_id', flat=True))
-        random_ids = random.sample(all_ids, min(20, len(all_ids)))
-        soalan_list = list(QuestionBank.objects.filter(question_id__in=random_ids))
+    # Optimize: Use efficient random selection
+    soalan_list = _get_random_questions(kod_subjek, 20)
     
     if request.method == 'POST':
         markah = 0
@@ -196,16 +201,8 @@ def kuiz_view(request):
 # -------------------------
 @login_required
 def kuiz_page(request):
-    # Optimize: Use efficient random selection instead of order_by('?')
-    all_questions = QuestionBank.objects.filter(subject_code='BM101')
-    total_count = all_questions.count()
-    
-    if total_count <= 20:
-        soalan_list = list(all_questions)
-    else:
-        all_ids = list(all_questions.values_list('question_id', flat=True))
-        random_ids = random.sample(all_ids, min(20, len(all_ids)))
-        soalan_list = list(QuestionBank.objects.filter(question_id__in=random_ids))
+    # Optimize: Use efficient random selection via helper function
+    soalan_list = _get_random_questions('BM101', 20)
     
     result = {'markah': 0, 'jumlah': len(soalan_list), 'peratus': 0}
     if request.method == 'POST':
@@ -357,11 +354,11 @@ def chatbot_api(request):
 
 # dalam views.py
 from lms.ml_models.predict_exam import predict_mark
-from .models import StaffPerformance  # sesuaikan nama model anda
 
 def show_prediction(request, user_id):
-    # Optimize: Use select_related to avoid N+1 query
-    staff = StaffPerformance.objects.select_related('user').get(user_id=user_id)
+    # Note: This uses StaffPerformanceData (unmanaged model) which has user_id field
+    from .models import StaffPerformanceData
+    staff = StaffPerformanceData.objects.get(user_id=user_id)
 
     predicted_mark = predict_mark(
         staff.marks_2020,

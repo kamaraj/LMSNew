@@ -6,7 +6,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODEL_PATH = os.path.join(BASE_DIR, 'ml_models', 'final_exam_model.pkl')
+MODEL_PATH = os.path.join(BASE_DIR, 'lms', 'ml_models', 'final_exam_model.pkl')
 
 # Cache the loaded model to avoid repeated file I/O
 _cached_model = None
