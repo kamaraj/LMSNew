@@ -145,7 +145,7 @@ def _get_random_questions(subject_code, limit=20):
     else:
         # Get random sample of IDs and fetch those questions
         all_ids = list(all_questions.values_list('question_id', flat=True))
-        random_ids = random.sample(all_ids, min(limit, len(all_ids)))
+        random_ids = random.sample(all_ids, limit)
         return list(QuestionBank.objects.filter(question_id__in=random_ids))
 
 @login_required
@@ -362,8 +362,13 @@ def chatbot_api(request):
     return JsonResponse({"response": "Invalid request"}, status=400)
 
 def show_prediction(request, user_id):
-    # Note: Uses StaffPerformanceData (unmanaged model) which has user_id field
-    staff = StaffPerformanceData.objects.get(user_id=user_id)
+    """Display ML prediction for staff performance."""
+    try:
+        # Note: Uses StaffPerformanceData (unmanaged model) which has user_id field
+        staff = StaffPerformanceData.objects.get(user_id=user_id)
+    except StaffPerformanceData.DoesNotExist:
+        messages.error(request, 'Staff data not found.')
+        return redirect('special_dashboard')
 
     predicted_mark = predict_mark(
         staff.marks_2020,

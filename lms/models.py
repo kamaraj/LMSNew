@@ -174,6 +174,32 @@ class QuestionBank(models.Model):
         db_table = 'lms_questionbank'
         
 class StaffPerformanceData(models.Model):
+    """
+    Unmanaged model for staff performance data stored in external MySQL table.
+    
+    This model maps to the 'lms_staff_performance' table which contains
+    historical performance metrics for staff members including course completion
+    and exam marks across multiple years.
+    
+    Fields:
+        number: Sequential number for record
+        name: Staff member's full name
+        staff_id: Unique staff identifier
+        user_id: Reference to user ID (not a ForeignKey - unmanaged)
+        position: Staff position/role
+        department: Department name
+        finance_management: Finance management course count
+        generic: Generic course count
+        ict: ICT course count
+        innovation: Innovation course count
+        language: Language course count
+        stem: STEM course count
+        total_courses: Total number of courses completed
+        marks_2020: Exam marks for 2020
+        
+    Note: This is an unmanaged model (managed=False) that reads from an
+          existing MySQL table. Schema changes must be made directly in MySQL.
+    """
     number = models.IntegerField()
     name = models.CharField(max_length=100)
     staff_id = models.CharField(max_length=100)
@@ -188,6 +214,7 @@ class StaffPerformanceData(models.Model):
     stem = models.IntegerField()
     total_courses = models.IntegerField()
     marks_2020 = models.IntegerField()
+    
     class Meta:
         managed = False
         db_table = 'lms_staff_performance'  # Link ke table MySQL
