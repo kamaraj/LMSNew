@@ -11,6 +11,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 import csv
 import pandas as pd
+import random
 from django.db import connection
 from django.utils import timezone
 import json
@@ -63,8 +64,8 @@ def after_login_view(request):
 @login_required
 def dashboard_redirect(request):
     try:
-        # Optimize: Use select_related to avoid additional query
-        user_profile = UserProfile.objects.select_related('user').get(user=request.user)
+        # Get user profile - no need for select_related since we already have the user
+        user_profile = UserProfile.objects.get(user=request.user)
         role = user_profile.role
     except UserProfile.DoesNotExist:
         return redirect('login')
@@ -126,8 +127,19 @@ def user_dashboard(request):
 @login_required
 def kuiz_view(request):
     kod_subjek = request.GET.get('set', 'BM101')
-    # Optimize: Convert queryset to list immediately to avoid repeated queries
-    soalan_list = list(QuestionBank.objects.filter(subject_code=kod_subjek).order_by('?')[:20])
+    
+    # Optimize: Use efficient random selection instead of order_by('?')
+    # First get the count and then sample random IDs
+    all_questions = QuestionBank.objects.filter(subject_code=kod_subjek)
+    total_count = all_questions.count()
+    
+    if total_count <= 20:
+        soalan_list = list(all_questions)
+    else:
+        # Get random sample of IDs and fetch those questions
+        all_ids = list(all_questions.values_list('question_id', flat=True))
+        random_ids = random.sample(all_ids, min(20, len(all_ids)))
+        soalan_list = list(QuestionBank.objects.filter(question_id__in=random_ids))
     
     if request.method == 'POST':
         markah = 0
@@ -184,8 +196,17 @@ def kuiz_view(request):
 # -------------------------
 @login_required
 def kuiz_page(request):
-    # Optimize: Convert to list and use only() to fetch only needed fields
-    soalan_list = list(QuestionBank.objects.filter(subject_code='BM101')[:20])
+    # Optimize: Use efficient random selection instead of order_by('?')
+    all_questions = QuestionBank.objects.filter(subject_code='BM101')
+    total_count = all_questions.count()
+    
+    if total_count <= 20:
+        soalan_list = list(all_questions)
+    else:
+        all_ids = list(all_questions.values_list('question_id', flat=True))
+        random_ids = random.sample(all_ids, min(20, len(all_ids)))
+        soalan_list = list(QuestionBank.objects.filter(question_id__in=random_ids))
+    
     result = {'markah': 0, 'jumlah': len(soalan_list), 'peratus': 0}
     if request.method == 'POST':
         markah = 0
@@ -340,7 +361,7 @@ from .models import StaffPerformance  # sesuaikan nama model anda
 
 def show_prediction(request, user_id):
     # Optimize: Use select_related to avoid N+1 query
-    staff = StaffPerformance.objects.select_related('user__user').get(user_id=user_id)
+    staff = StaffPerformance.objects.select_related('user').get(user_id=user_id)
 
     predicted_mark = predict_mark(
         staff.marks_2020,
