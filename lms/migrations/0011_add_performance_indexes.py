@@ -32,10 +32,6 @@ class Migration(migrations.Migration):
             name='subject_code',
             field=models.CharField(db_index=True, max_length=20),
         ),
-        migrations.AddIndex(
-            model_name='questionbank',
-            index=models.Index(fields=['subject_code'], name='lms_questio_subject_idx'),
-        ),
         
         # Add indexes to QuizResult
         migrations.AlterField(

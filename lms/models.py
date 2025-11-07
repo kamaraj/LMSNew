@@ -172,9 +172,6 @@ class QuestionBank(models.Model):
     
     class Meta:
         db_table = 'lms_questionbank'
-        indexes = [
-            models.Index(fields=['subject_code']),
-        ]
         
 class StaffPerformanceData(models.Model):
     number = models.IntegerField()

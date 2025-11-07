@@ -19,7 +19,9 @@ from django.core.serializers.json import DjangoJSONEncoder
 
 
 # 📦 Import Model
-from .models import QuizQuestion, QuestionBank, UserProfile, Quiz, QuizResult, Course, Module, StaffPerformance
+from .models import (QuizQuestion, QuestionBank, UserProfile, Quiz, QuizResult, 
+                     Course, Module, StaffPerformance, StaffPerformanceData)
+from lms.ml_models.predict_exam import predict_mark
 # -------------------------
 
 # 🏠 Halaman Awal / Utama
@@ -126,7 +128,14 @@ def user_dashboard(request):
 def _get_random_questions(subject_code, limit=20):
     """
     Efficiently get random questions for a given subject.
-    Uses ID sampling instead of order_by('?') for better performance.
+    
+    Uses ID sampling instead of order_by('?') for better performance on large datasets.
+    Two queries are intentional:
+    1. Fetch IDs only (lightweight)
+    2. Fetch full records for random sample
+    
+    This is faster than order_by('?') which requires sorting the entire table.
+    For small datasets (<=limit), returns all questions directly.
     """
     all_questions = QuestionBank.objects.filter(subject_code=subject_code)
     total_count = all_questions.count()
@@ -352,12 +361,8 @@ def chatbot_api(request):
 
     return JsonResponse({"response": "Invalid request"}, status=400)
 
-# dalam views.py
-from lms.ml_models.predict_exam import predict_mark
-
 def show_prediction(request, user_id):
-    # Note: This uses StaffPerformanceData (unmanaged model) which has user_id field
-    from .models import StaffPerformanceData
+    # Note: Uses StaffPerformanceData (unmanaged model) which has user_id field
     staff = StaffPerformanceData.objects.get(user_id=user_id)
 
     predicted_mark = predict_mark(
