@@ -18,7 +18,7 @@ ROLE_CHOICES = [
 ]
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    staff_id = models.CharField(max_length=20)
+    staff_id = models.CharField(max_length=20, db_index=True)
     full_name = models.CharField(max_length=100)
     department = models.CharField(max_length=255)
     position = models.CharField(max_length=100)
@@ -28,7 +28,13 @@ class UserProfile(models.Model):
         ('user', 'User'),
         ('manager', 'Manager'),
     )
-    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='user')
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='user', db_index=True)
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=['department', 'role']),
+        ]
+    
     def __str__(self):
         return self.user.username
 # Model untuk kategori
@@ -109,27 +115,38 @@ class QuizQuestion(models.Model):
 class QuizResult(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True, blank=True, default=None)  # ✅ wajib untuk user_id
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, null=True)
-    set_id = models.CharField(max_length=100, null=True, blank=True, default='')
+    set_id = models.CharField(max_length=100, null=True, blank=True, default='', db_index=True)
     cluster = models.CharField(max_length=100, null=True)
     total_questions = models.IntegerField(null=True)
     score = models.IntegerField()
     percentage = models.DecimalField(max_digits=5, decimal_places=2, null=True)
     taken_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=['user', 'set_id']),
+            models.Index(fields=['user', 'taken_at']),
+        ]
+    
     def __str__(self):
         return f"{self.user.user.username} - {self.quiz.title} - {self.score}"
     
 # Model untuk prestasi staf
 class StaffPerformance(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name="staff_performance")
+    name = models.CharField(max_length=255, default="Unknown")
     year = models.IntegerField()  # Tahun dari dataset
     average_score = models.FloatField()  # Purata markah
     progress_percentage = models.FloatField()  # Peratusan kemajuan
-    name = models.CharField(max_length=255, default="Unknown")  # Tambah default value
-    year = models.IntegerField()
-    average_score = models.FloatField()
-    progress_percentage = models.FloatField()
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=['user', 'year']),
+            models.Index(fields=['year']),
+        ]
+    
     def __str__(self):
-        return f"{self.user.username} - {self.year} - {self.average_score}%"
+        return f"{self.user.user.username} - {self.year} - {self.average_score}%"
     
 # Model untuk bahasa
 class Language(models.Model):
@@ -145,17 +162,44 @@ class STEM(models.Model):
 #batch3 = Batch.objects.create(name="Lencana Performance")
 class QuestionBank(models.Model):
     question_id = models.AutoField(primary_key=True)  # ← ini penting
-    subject_code = models.CharField(max_length=20)
+    subject_code = models.CharField(max_length=20, db_index=True)
     question_text = models.TextField()
     choice_a = models.CharField(max_length=255)
     choice_b = models.CharField(max_length=255)
     choice_c = models.CharField(max_length=255)
     choice_d = models.CharField(max_length=255)
     correct_answer = models.CharField(max_length=1)
+    
     class Meta:
         db_table = 'lms_questionbank'
         
 class StaffPerformanceData(models.Model):
+    """
+    Unmanaged model for staff performance data stored in external MySQL table.
+    
+    This model maps to the 'lms_staff_performance' table which contains
+    historical performance metrics for staff members including course completion
+    and exam marks across multiple years.
+    
+    Fields:
+        number: Sequential number for record
+        name: Staff member's full name
+        staff_id: Unique staff identifier
+        user_id: Reference to user ID (not a ForeignKey - unmanaged)
+        position: Staff position/role
+        department: Department name
+        finance_management: Finance management course count
+        generic: Generic course count
+        ict: ICT course count
+        innovation: Innovation course count
+        language: Language course count
+        stem: STEM course count
+        total_courses: Total number of courses completed
+        marks_2020: Exam marks for 2020
+        
+    Note: This is an unmanaged model (managed=False) that reads from an
+          existing MySQL table. Schema changes must be made directly in MySQL.
+    """
     number = models.IntegerField()
     name = models.CharField(max_length=100)
     staff_id = models.CharField(max_length=100)
@@ -170,6 +214,7 @@ class StaffPerformanceData(models.Model):
     stem = models.IntegerField()
     total_courses = models.IntegerField()
     marks_2020 = models.IntegerField()
+    
     class Meta:
         managed = False
         db_table = 'lms_staff_performance'  # Link ke table MySQL
